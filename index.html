@@ -96,6 +96,34 @@
             accent-color: var(--primary);
             box-sizing: border-box;
         }
+
+        /* Planning Targets */
+        .targets-box {
+            background: #F9F9F9;
+            border: 1px solid #E5E5EA;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+        .targets-header {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--subtext);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .target-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .target-row:last-child { margin-bottom: 0; }
+        .t-label { color: var(--text); }
+        .t-val { font-weight: 600; font-family: monospace; }
+        .dot { height: 8px; width: 8px; display: inline-block; border-radius: 50%; margin-right: 6px; }
         
         /* Results */
         .result-box {
@@ -162,6 +190,22 @@
             <label>Annual Income (2026): <span id="incomeVal" class="value-display">$35,000</span></label>
             <input type="range" id="annualIncome" min="0" max="300000" step="1000" value="35000" oninput="updateCalculations()">
             
+            <div class="targets-box">
+                <div class="targets-header">Investment Planning Targets</div>
+                <div class="target-row">
+                    <span class="t-label"><span class="dot" style="background:var(--platinum)"></span>Stay on Medicaid</span>
+                    <span class="t-val" id="target138">$0</span>
+                </div>
+                <div class="target-row">
+                    <span class="t-label"><span class="dot" style="background:var(--silver)"></span>Keep Silver CSR</span>
+                    <span class="t-val" id="target250">$0</span>
+                </div>
+                <div class="target-row">
+                    <span class="t-label"><span class="dot" style="background:var(--gold)"></span>Max Subsidy Limit</span>
+                    <span class="t-val" id="target400">$0</span>
+                </div>
+            </div>
+
             <div id="healthResult" class="result-box hidden">
                 <div id="healthTitle" class="result-title">--</div>
                 <div id="healthDesc" class="result-desc">--</div>
@@ -226,19 +270,26 @@
         const size = parseInt(document.getElementById('hhSize').value);
         document.getElementById('hhSizeVal').innerText = size;
 
-        // Health Tab Calculation
+        // --- Health Tab Updates ---
         const annualInc = parseFloat(document.getElementById('annualIncome').value);
         document.getElementById('incomeVal').innerText = "$" + annualInc.toLocaleString();
+        
+        // Update Target Thresholds
+        const fpl = getFPL(size);
+        document.getElementById('target138').innerText = "< $" + Math.floor(fpl * 1.38).toLocaleString();
+        document.getElementById('target250').innerText = "< $" + Math.floor(fpl * 2.50).toLocaleString();
+        document.getElementById('target400').innerText = "< $" + Math.floor(fpl * 4.00).toLocaleString();
+
         calcHealth(size, annualInc);
 
-        // SNAP Tab Logic
+        // --- SNAP Tab Updates ---
         const fpl100_annual = getFPL(size);
         const limit_annual = fpl100_annual * 2.0; // 200% FPL Limit Annual
         
         const snapIncomeSlider = document.getElementById('annualSnapIncome');
         const snapDeductSlider = document.getElementById('monthlyDeductions');
 
-        // 1. Cap Income Slider at Limit
+        // Cap Income Slider
         snapIncomeSlider.max = limit_annual;
         document.getElementById('snapLimitText').innerText = "Max Allowed: $" + limit_annual.toLocaleString() + "/yr";
 
@@ -246,25 +297,22 @@
         let snapAnnual = parseFloat(snapIncomeSlider.value);
         if (snapAnnual > limit_annual) snapAnnual = limit_annual;
 
-        // 2. Calculate Monthly Income
+        // Calculate Monthly Income
         const currentMonthlyIncome = snapAnnual / 12;
 
-        // 3. Cap Deductions Slider at Monthly Income
-        // Since you can't deduct more than you make for net income purposes effectively
-        // We round up to nearest 50 for cleaner slider behavior
+        // Cap Deductions Slider
         let maxDeduction = Math.ceil(currentMonthlyIncome / 50) * 50;
-        if (maxDeduction === 0) maxDeduction = 0; // handle 0 case
-        
+        if (maxDeduction === 0) maxDeduction = 0;
         snapDeductSlider.max = maxDeduction;
 
-        // Get Deduction Value (clamped by new max)
+        // Get Deduction Value (clamped)
         let snapDeduct = parseFloat(snapDeductSlider.value);
         if (snapDeduct > maxDeduction) {
             snapDeduct = maxDeduction;
             snapDeductSlider.value = maxDeduction;
         }
 
-        // Update Text Labels
+        // Update Labels
         document.getElementById('snapIncomeVal').innerText = "$" + snapAnnual.toLocaleString();
         document.getElementById('deductVal').innerText = "$" + snapDeduct.toLocaleString();
 
@@ -285,29 +333,29 @@
         resultBox.className = 'result-box';
         
         if (fplPercent <= 138) {
-            title.innerText = "Healthy Michigan Plan (Platinum Level)";
-            desc.innerText = "State-sponsored Platinum-equivalent plan. $0 premiums and low/no out-of-pocket costs.";
+            title.innerText = "Healthy Michigan Plan (Platinum)";
+            desc.innerText = "State-sponsored Platinum-equivalent plan. $0 premiums.";
             resultBox.style.border = "2px solid var(--platinum)";
             title.style.color = "var(--platinum)";
             bar.style.width = "25%";
             bar.style.backgroundColor = "var(--platinum)";
         } else if (fplPercent <= 250) {
             title.innerText = "Silver Plus (High Value)";
-            desc.innerText = "Eligible for Cost Sharing Reductions (CSR). Look for Silver plans with reduced deductibles.";
+            desc.innerText = "Eligible for Cost Sharing Reductions (CSR).";
             resultBox.style.border = "2px solid var(--silver)";
             title.style.color = "#666";
             bar.style.width = "50%";
             bar.style.backgroundColor = "var(--silver)";
         } else if (fplPercent <= 400) {
             title.innerText = "Standard Marketplace";
-            desc.innerText = "Eligible for premium tax credits to lower monthly payments.";
+            desc.innerText = "Eligible for premium tax credits.";
             resultBox.style.border = "2px solid var(--gold)";
             title.style.color = "var(--gold)";
             bar.style.width = "75%";
             bar.style.backgroundColor = "var(--gold)";
         } else {
             title.innerText = "Subsidy Cliff";
-            desc.innerText = "Income exceeds 400% FPL. Full price premiums apply.";
+            desc.innerText = "Full price premiums apply.";
             resultBox.style.border = "2px solid var(--cliff)";
             title.style.color = "var(--cliff)";
             bar.style.width = "100%";
@@ -335,7 +383,7 @@
             title.style.color = "var(--primary)";
         } else {
             title.innerText = "$0 Benefit";
-            desc.innerText = "Based on income and deductions, benefit reduces to zero.";
+            desc.innerText = "Benefit reduces to zero.";
             title.style.color = "var(--subtext)";
         }
     }
