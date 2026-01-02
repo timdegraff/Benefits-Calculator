@@ -174,11 +174,11 @@
 
     <div id="snapTab" class="hidden">
         <div class="card">
-            <label>Gross Monthly Income <span id="snapIncomeVal" class="value-display">$0</span></label>
-            <input type="range" id="monthlyIncome" min="0" max="5000" step="50" value="0" oninput="updateCalculations()">
+            <label>Annual Gross Income <span id="snapIncomeVal" class="value-display">$0</span></label>
+            <input type="range" id="annualSnapIncome" min="0" max="100000" step="500" value="0" oninput="updateCalculations()">
             <span id="snapLimitText" class="limit-display">Max Allowed: --</span>
             
-            <label>Monthly Deductions (Housing/Util) <span id="deductVal" class="value-display">$0</span></label>
+            <label>Monthly Deductions (Rent/Util) <span id="deductVal" class="value-display">$0</span></label>
             <input type="range" id="monthlyDeductions" min="0" max="5000" step="50" value="0" oninput="updateCalculations()">
 
             <div id="snapResult" class="result-box hidden">
@@ -233,30 +233,31 @@
 
         // SNAP Tab Logic (Dynamic Limits)
         const fpl100_annual = getFPL(size);
-        const limit_monthly = Math.floor((fpl100_annual * 2.0) / 12); // 200% FPL Limit
+        const limit_annual = fpl100_annual * 2.0; // 200% FPL Limit Annual
         
-        const snapIncomeSlider = document.getElementById('monthlyIncome');
+        const snapIncomeSlider = document.getElementById('annualSnapIncome');
         const snapDeductSlider = document.getElementById('monthlyDeductions');
 
         // Update Slider Max Caps
-        snapIncomeSlider.max = limit_monthly;
-        snapDeductSlider.max = 5000; // Fixed cap for deductions
+        snapIncomeSlider.max = limit_annual;
+        snapDeductSlider.max = 5000; 
 
         // Update Limit Text Display
-        document.getElementById('snapLimitText').innerText = "Max Allowed: $" + limit_monthly.toLocaleString();
+        document.getElementById('snapLimitText').innerText = "Max Allowed: $" + limit_annual.toLocaleString() + "/yr";
 
-        // Get Values (after max might have clamped them visually, though we trust `value`)
-        // Note: Changing .max via JS doesn't always clamp .value immediately in all browsers, so we clamp manually for calc
-        let snapIncome = parseFloat(snapIncomeSlider.value);
-        if (snapIncome > limit_monthly) snapIncome = limit_monthly;
+        // Get Values (clamp manually just in case)
+        let snapAnnual = parseFloat(snapIncomeSlider.value);
+        if (snapAnnual > limit_annual) snapAnnual = limit_annual;
         
         let snapDeduct = parseFloat(snapDeductSlider.value);
 
         // Update Text Labels
-        document.getElementById('snapIncomeVal').innerText = "$" + snapIncome.toLocaleString();
+        document.getElementById('snapIncomeVal').innerText = "$" + snapAnnual.toLocaleString();
         document.getElementById('deductVal').innerText = "$" + snapDeduct.toLocaleString();
 
-        calcSnap(size, snapIncome, snapDeduct);
+        // Convert annual to monthly for calculation
+        const snapMonthly = snapAnnual / 12;
+        calcSnap(size, snapMonthly, snapDeduct);
     }
 
     function calcHealth(size, income) {
@@ -303,7 +304,7 @@
         }
     }
 
-    function calcSnap(size, income, deductions) {
+    function calcSnap(size, monthlyIncome, deductions) {
         const resultBox = document.getElementById('snapResult');
         const title = document.getElementById('snapTitle');
         const desc = document.getElementById('snapDesc');
@@ -311,7 +312,7 @@
         resultBox.classList.remove('hidden');
         
         const maxBenefit = getMaxSnap(size);
-        const netIncome = Math.max(0, income - deductions);
+        const netIncome = Math.max(0, monthlyIncome - deductions);
         const benefit = maxBenefit - (0.3 * netIncome);
         
         if (benefit > 0) {
@@ -334,4 +335,5 @@
 
 </body>
 </html>
+
 
