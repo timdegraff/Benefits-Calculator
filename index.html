@@ -75,11 +75,6 @@
             margin-bottom: 8px;
             font-weight: 500;
         }
-        .value-display {
-            color: var(--text);
-            font-weight: 600;
-            float: right;
-        }
         input[type="number"], input[type="range"] {
             width: 100%;
             box-sizing: border-box;
@@ -93,9 +88,7 @@
             -moz-appearance: textfield;
         }
         input[type="range"] {
-            margin-bottom: 20px;
-            margin-top: 10px;
-            accent-color: var(--primary);
+            margin-bottom: 15px;
         }
         
         /* Results */
@@ -131,8 +124,14 @@
         .zone-bar {
             height: 100%;
             width: 0%;
-            transition: width 0.3s ease, background-color 0.3s ease;
+            transition: width 0.5s ease, background-color 0.5s ease;
         }
+
+        /* Colors for Status */
+        .status-platinum { background-color: var(--platinum); color: white; }
+        .status-silver { background-color: var(--silver); color: black; }
+        .status-gold { background-color: var(--gold); color: white; }
+        .status-cliff { background-color: var(--cliff); color: white; }
 
         .legal {
             font-size: 10px;
@@ -154,14 +153,14 @@
     </div>
 
     <div class="card">
-        <label>Household Size: <span id="hhSizeVal" class="value-display">1</span></label>
+        <label>Household Size: <span id="hhSizeVal">1</span></label>
         <input type="range" id="hhSize" min="1" max="10" value="1" oninput="updateCalculations()">
     </div>
 
     <div id="healthTab">
         <div class="card">
-            <label>Annual Income (2026): <span id="incomeVal" class="value-display">$35,000</span></label>
-            <input type="range" id="annualIncome" min="0" max="300000" step="1000" value="35000" oninput="updateCalculations()">
+            <label>Estimated Annual Income (2026)</label>
+            <input type="number" id="annualIncome" placeholder="e.g. 35000" oninput="updateCalculations()">
             
             <div id="healthResult" class="result-box hidden">
                 <div id="healthTitle" class="result-title">--</div>
@@ -194,18 +193,25 @@
 </div>
 
 <script>
-    // 2026 FPL Data (100% level)
+    // 2026 FPL Data (100% level). Add $5,500 for each person over 1 (approx based on user table)
+    // User Table Base: 1: 15650. Delta per person is 5500.
+    // 1: 15650, 2: 21150, 3: 26650... 10: 65150.
+    
     function getFPL(size) {
         return 15650 + ((size - 1) * 5500);
     }
 
     // SNAP 2026 Estimates
+    // Max Allotment (approx) base + increase per person
+    // Using rough estimates for 2026 based on HH 10 = $2225 and HH 1 = $291 (approx)
     function getMaxSnap(size) {
+        // Linear approx for calculation simplicity
         const base = 292; 
         const perPerson = 215; 
         return base + ((size - 1) * perPerson);
     }
     
+    // Standard Deduction Estimates
     function getStdDeduction(size) {
         if (size <= 3) return 198;
         if (size == 4) return 208;
@@ -226,26 +232,28 @@
         const size = parseInt(document.getElementById('hhSize').value);
         document.getElementById('hhSizeVal').innerText = size;
 
-        // Update Health Income Label
-        const annualInc = parseFloat(document.getElementById('annualIncome').value);
-        document.getElementById('incomeVal').innerText = "$" + annualInc.toLocaleString();
-
-        calcHealth(size, annualInc);
+        calcHealth(size);
         calcSnap(size);
     }
 
-    function calcHealth(size, income) {
+    function calcHealth(size) {
+        const income = parseFloat(document.getElementById('annualIncome').value);
         const resultBox = document.getElementById('healthResult');
         const title = document.getElementById('healthTitle');
         const desc = document.getElementById('healthDesc');
         const bar = document.getElementById('healthBar');
 
-        // Always show result now that it is a slider with a default value
+        if (isNaN(income)) {
+            resultBox.classList.add('hidden');
+            return;
+        }
+
         resultBox.classList.remove('hidden');
         
         const fpl100 = getFPL(size);
         const fplPercent = (income / fpl100) * 100;
         
+        // Reset Styles
         resultBox.className = 'result-box';
         
         if (fplPercent <= 138) {
@@ -307,15 +315,23 @@
             title.style.color = "var(--cliff)";
             return;
         }
+
+        // Est Calc: Max Allotment - 0.3 * (Net Income)
+        // Net Income simplified: Gross - Standard Deduction - (Excess Shelter Deduction logic omitted for simplicity/safety, just using raw deductions entered)
+        // Note: Actual SNAP math is complex. This uses the simplified formula requested.
         
         const maxBenefit = getMaxSnap(size);
         const stdDed = getStdDeduction(size);
         
         // Simplified Net for estimation
+        // Net = Gross - 20% earned income deduction (assumed all earned) - Std Ded - Shelter(excess)
+        // Using user formula: Max Allotment - (0.3 * (Gross - Deductions))
+        
         const netIncome = Math.max(0, income - deductions);
         const benefit = maxBenefit - (0.3 * netIncome);
         
         if (benefit > 0) {
+            // Min benefit for 1-2 people is often $23, but we'll show calc
             let finalBenefit = Math.max(0, Math.round(benefit));
             if (size <= 2 && finalBenefit < 23 && finalBenefit > 0) finalBenefit = 23;
             
@@ -328,9 +344,6 @@
             title.style.color = "var(--subtext)";
         }
     }
-
-    // Initialize on load
-    window.onload = updateCalculations;
 </script>
 
 </body>
