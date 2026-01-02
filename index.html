@@ -231,33 +231,44 @@
         document.getElementById('incomeVal').innerText = "$" + annualInc.toLocaleString();
         calcHealth(size, annualInc);
 
-        // SNAP Tab Logic (Dynamic Limits)
+        // SNAP Tab Logic
         const fpl100_annual = getFPL(size);
         const limit_annual = fpl100_annual * 2.0; // 200% FPL Limit Annual
         
         const snapIncomeSlider = document.getElementById('annualSnapIncome');
         const snapDeductSlider = document.getElementById('monthlyDeductions');
 
-        // Update Slider Max Caps
+        // 1. Cap Income Slider at Limit
         snapIncomeSlider.max = limit_annual;
-        snapDeductSlider.max = 5000; 
-
-        // Update Limit Text Display
         document.getElementById('snapLimitText').innerText = "Max Allowed: $" + limit_annual.toLocaleString() + "/yr";
 
-        // Get Values (clamp manually just in case)
+        // Get Income Value (clamped)
         let snapAnnual = parseFloat(snapIncomeSlider.value);
         if (snapAnnual > limit_annual) snapAnnual = limit_annual;
+
+        // 2. Calculate Monthly Income
+        const currentMonthlyIncome = snapAnnual / 12;
+
+        // 3. Cap Deductions Slider at Monthly Income
+        // Since you can't deduct more than you make for net income purposes effectively
+        // We round up to nearest 50 for cleaner slider behavior
+        let maxDeduction = Math.ceil(currentMonthlyIncome / 50) * 50;
+        if (maxDeduction === 0) maxDeduction = 0; // handle 0 case
         
+        snapDeductSlider.max = maxDeduction;
+
+        // Get Deduction Value (clamped by new max)
         let snapDeduct = parseFloat(snapDeductSlider.value);
+        if (snapDeduct > maxDeduction) {
+            snapDeduct = maxDeduction;
+            snapDeductSlider.value = maxDeduction;
+        }
 
         // Update Text Labels
         document.getElementById('snapIncomeVal').innerText = "$" + snapAnnual.toLocaleString();
         document.getElementById('deductVal').innerText = "$" + snapDeduct.toLocaleString();
 
-        // Convert annual to monthly for calculation
-        const snapMonthly = snapAnnual / 12;
-        calcSnap(size, snapMonthly, snapDeduct);
+        calcSnap(size, currentMonthlyIncome, snapDeduct);
     }
 
     function calcHealth(size, income) {
@@ -335,5 +346,3 @@
 
 </body>
 </html>
-
-
