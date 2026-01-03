@@ -11,7 +11,7 @@
             --card: #FFFFFF;
             --text: #000000;
             --subtext: #8E8E93;
-            --platinum: #5E5CE6; /* Indigo for Platinum */
+            --platinum: #5E5CE6; /* Indigo */
             --silver: #A0A0A5;
             --gold: #FF9500;
             --cliff: #FF3B30;
@@ -24,150 +24,66 @@
             padding: 20px;
             -webkit-tap-highlight-color: transparent;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        h1 {
-            font-size: 24px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        .container { max-width: 600px; margin: 0 auto; padding-bottom: 40px; }
+        h1 { font-size: 24px; text-align: center; margin-bottom: 20px; }
         
         /* Tabs */
         .tabs {
-            display: flex;
-            background: #E5E5EA;
-            border-radius: 12px;
-            padding: 2px;
-            margin-bottom: 20px;
+            display: flex; background: #E5E5EA; border-radius: 12px; padding: 2px; margin-bottom: 20px;
         }
         .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            font-weight: 600;
-            font-size: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.2s;
+            flex: 1; text-align: center; padding: 10px; font-weight: 600; font-size: 14px;
+            border-radius: 10px; cursor: pointer; transition: background 0.2s;
         }
-        .tab.active {
-            background: var(--card);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .tab.active { background: var(--card); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
         /* Cards */
         .card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background: var(--card); border-radius: 16px; padding: 20px;
+            margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .hidden { display: none; }
 
-        /* Inputs */
-        label {
-            display: block;
-            font-size: 14px;
-            color: var(--subtext);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        .value-display {
-            color: var(--text);
-            font-weight: 600;
-            float: right;
-        }
-        .limit-display {
-            display: block;
-            font-size: 11px;
-            color: var(--cliff);
-            margin-top: -5px;
-            margin-bottom: 10px;
-            text-align: right;
-        }
+        /* Controls */
+        label { display: block; font-size: 14px; color: var(--subtext); margin-bottom: 8px; font-weight: 500; }
+        .value-display { color: var(--text); font-weight: 600; float: right; }
+        .limit-display { display: block; font-size: 11px; color: var(--cliff); margin-top: -5px; margin-bottom: 10px; text-align: right; }
         
-        input[type="range"] {
-            width: 100%;
-            margin-bottom: 20px;
-            margin-top: 10px;
-            accent-color: var(--primary);
-            box-sizing: border-box;
+        /* Slider Group with Buttons */
+        .slider-group { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; margin-top: 10px; }
+        input[type="range"] { flex: 1; accent-color: var(--primary); height: 25px; }
+        .tune-btn {
+            width: 32px; height: 32px; border-radius: 50%; border: 1px solid #E5E5EA;
+            background: #F9F9F9; color: var(--primary); font-size: 18px; line-height: 1;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            user-select: none;
         }
+        .tune-btn:active { background: #E5E5EA; }
 
-        /* Planning Targets */
-        .targets-box {
-            background: #F9F9F9;
-            border: 1px solid #E5E5EA;
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 5px;
-            margin-bottom: 20px;
+        /* Visual Track */
+        .track-legend {
+            height: 6px; width: 100%; border-radius: 3px; margin-top: -15px; margin-bottom: 20px;
+            background: #ddd; position: relative;
         }
-        .targets-header {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--subtext);
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .target-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-        .target-row:last-child { margin-bottom: 0; }
-        .t-label { color: var(--text); }
-        .t-val { font-weight: 600; font-family: monospace; }
-        .dot { height: 8px; width: 8px; display: inline-block; border-radius: 50%; margin-right: 6px; }
         
-        /* Results */
+        /* Checkbox */
+        .checkbox-row { display: flex; align-items: center; margin-top: 15px; margin-bottom: 5px; }
+        input[type="checkbox"] { width: 20px; height: 20px; margin-right: 10px; accent-color: var(--primary); }
+        .cb-label { font-size: 15px; color: var(--text); font-weight: 500; }
+
+        /* Results & Math */
         .result-box {
-            text-align: center;
-            padding: 15px;
-            border-radius: 12px;
-            background: #F2F2F7;
-            margin-top: 10px;
+            text-align: center; padding: 15px; border-radius: 12px; background: #F2F2F7; margin-top: 10px;
         }
-        .result-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-        .result-desc {
-            font-size: 13px;
-            color: var(--subtext);
-            line-height: 1.4;
-        }
+        .result-title { font-size: 18px; font-weight: 700; margin-bottom: 5px; color: var(--primary); }
+        .result-desc { font-size: 13px; color: var(--subtext); line-height: 1.4; }
+        
+        details { margin-top: 15px; text-align: left; font-size: 13px; color: var(--subtext); }
+        summary { cursor: pointer; color: var(--primary); font-weight: 500; margin-bottom: 5px; outline: none; }
+        .math-row { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px dashed #E5E5EA; padding-bottom: 2px; }
+        .math-val { font-family: monospace; color: var(--text); }
 
-        /* Thermometer Style Indicators */
-        .zone-indicator {
-            height: 8px;
-            width: 100%;
-            background: #E5E5EA;
-            border-radius: 4px;
-            margin-top: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-        .zone-bar {
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease, background-color 0.3s ease;
-        }
-
-        .legal {
-            font-size: 10px;
-            color: #999;
-            text-align: center;
-            margin-top: 30px;
-            line-height: 1.4;
-        }
+        .legal { font-size: 10px; color: #999; text-align: center; margin-top: 30px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -181,74 +97,79 @@
     </div>
 
     <div class="card">
-        <label>Household Size: <span id="hhSizeVal" class="value-display">1</span></label>
-        <input type="range" id="hhSize" min="1" max="10" value="1" oninput="updateCalculations()">
+        <label>Household Size: <span id="hhSizeVal" class="value-display">8</span></label>
+        <div class="slider-group">
+            <div class="tune-btn" onclick="adjustVal('hhSize', -1)">-</div>
+            <input type="range" id="hhSize" min="1" max="10" value="8" oninput="updateCalculations()">
+            <div class="tune-btn" onclick="adjustVal('hhSize', 1)">+</div>
+        </div>
     </div>
 
     <div id="healthTab">
         <div class="card">
-            <label>Annual Income (2026): <span id="incomeVal" class="value-display">$35,000</span></label>
-            <input type="range" id="annualIncome" min="0" max="300000" step="1000" value="35000" oninput="updateCalculations()">
+            <label>Annual Income: <span id="incomeVal" class="value-display">$40,000</span></label>
+            <div class="slider-group" style="margin-bottom: 8px;">
+                <div class="tune-btn" onclick="adjustVal('annualIncome', -1000)">-</div>
+                <input type="range" id="annualIncome" min="0" max="300000" step="1000" value="40000" oninput="updateCalculations()">
+                <div class="tune-btn" onclick="adjustVal('annualIncome', 1000)">+</div>
+            </div>
             
-            <div class="targets-box">
-                <div class="targets-header">Investment Planning Targets</div>
-                <div class="target-row">
-                    <span class="t-label"><span class="dot" style="background:var(--platinum)"></span>Stay on Medicaid</span>
-                    <span class="t-val" id="target138">$0</span>
-                </div>
-                <div class="target-row">
-                    <span class="t-label"><span class="dot" style="background:var(--silver)"></span>Keep Silver CSR</span>
-                    <span class="t-val" id="target250">$0</span>
-                </div>
-                <div class="target-row">
-                    <span class="t-label"><span class="dot" style="background:var(--gold)"></span>Max Subsidy Limit</span>
-                    <span class="t-val" id="target400">$0</span>
-                </div>
+            <div class="track-legend" id="healthTrack"></div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="pregCheck" onchange="updateCalculations()">
+                <span class="cb-label">Household member is pregnant?</span>
             </div>
 
             <div id="healthResult" class="result-box hidden">
                 <div id="healthTitle" class="result-title">--</div>
                 <div id="healthDesc" class="result-desc">--</div>
-                <div class="zone-indicator">
-                    <div id="healthBar" class="zone-bar"></div>
-                </div>
             </div>
         </div>
     </div>
 
     <div id="snapTab" class="hidden">
         <div class="card">
-            <label>Annual Gross Income <span id="snapIncomeVal" class="value-display">$0</span></label>
-            <input type="range" id="annualSnapIncome" min="0" max="100000" step="500" value="0" oninput="updateCalculations()">
+            <label>Annual Gross Income <span id="snapIncomeVal" class="value-display">$40,000</span></label>
+            <div class="slider-group" style="margin-bottom: 5px;">
+                <div class="tune-btn" onclick="adjustVal('annualSnapIncome', -1000)">-</div>
+                <input type="range" id="annualSnapIncome" min="0" max="100000" step="1000" value="40000" oninput="updateCalculations()">
+                <div class="tune-btn" onclick="adjustVal('annualSnapIncome', 1000)">+</div>
+            </div>
             <span id="snapLimitText" class="limit-display">Max Allowed: --</span>
             
-            <label>Monthly Deductions (Rent/Util) <span id="deductVal" class="value-display">$0</span></label>
-            <input type="range" id="monthlyDeductions" min="0" max="5000" step="50" value="0" oninput="updateCalculations()">
+            <label>Monthly Deductions (Rent/Util) <span id="deductVal" class="value-display">$2,000</span></label>
+            <div class="slider-group">
+                <div class="tune-btn" onclick="adjustVal('monthlyDeductions', -100)">-</div>
+                <input type="range" id="monthlyDeductions" min="0" max="5000" step="100" value="2000" oninput="updateCalculations()">
+                <div class="tune-btn" onclick="adjustVal('monthlyDeductions', 100)">+</div>
+            </div>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="disabilityCheck" onchange="updateCalculations()">
+                <span class="cb-label">Household member is disabled or 60+?</span>
+            </div>
 
             <div id="snapResult" class="result-box hidden">
                 <div id="snapTitle" class="result-title">--</div>
                 <div id="snapDesc" class="result-desc">--</div>
+                
+                <details>
+                    <summary>Show Calculation</summary>
+                    <div id="mathContent"></div>
+                </details>
             </div>
         </div>
     </div>
 
     <div class="legal">
-        Disclaimer: This tool provides estimates for informational purposes only. It is not an official determination of eligibility. Official determinations are made by MDHHS. "Platinum" refers to plan value equivalence, not official ACA metal tier.
+        Disclaimer: Estimates only. Not official determination. "Platinum" refers to plan value equivalence.
     </div>
 </div>
 
 <script>
-    // 2026 FPL Data (100% level)
-    function getFPL(size) {
-        return 15650 + ((size - 1) * 5500);
-    }
-
-    // SNAP 2026 Estimates
-    function getMaxSnap(size) {
-        const base = 292; 
-        const perPerson = 215; 
-        return base + ((size - 1) * perPerson);
-    }
+    function getFPL(size) { return 15650 + ((size - 1) * 5500); }
+    function getMaxSnap(size) { return 292 + ((size - 1) * 215); } // Approx 2026
     
     function getStdDeduction(size) {
         if (size <= 3) return 198;
@@ -257,10 +178,19 @@
         return 279; // 6+
     }
 
+    function adjustVal(id, amount) {
+        const el = document.getElementById(id);
+        let newVal = parseFloat(el.value) + amount;
+        // Respect min/max
+        if (newVal < parseFloat(el.min)) newVal = parseFloat(el.min);
+        if (newVal > parseFloat(el.max)) newVal = parseFloat(el.max);
+        el.value = newVal;
+        updateCalculations();
+    }
+
     function switchTab(tab) {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.querySelector(`.tab[onclick="switchTab('${tab}')"]`).classList.add('active');
-        
         document.getElementById('healthTab').classList.add('hidden');
         document.getElementById('snapTab').classList.add('hidden');
         document.getElementById(`${tab}Tab`).classList.remove('hidden');
@@ -270,96 +200,103 @@
         const size = parseInt(document.getElementById('hhSize').value);
         document.getElementById('hhSizeVal').innerText = size;
 
-        // --- Health Tab Updates ---
+        // --- Health Logic ---
         const annualInc = parseFloat(document.getElementById('annualIncome').value);
         document.getElementById('incomeVal').innerText = "$" + annualInc.toLocaleString();
         
-        // Update Target Thresholds
-        const fpl = getFPL(size);
-        document.getElementById('target138').innerText = "< $" + Math.floor(fpl * 1.38).toLocaleString();
-        document.getElementById('target250').innerText = "< $" + Math.floor(fpl * 2.50).toLocaleString();
-        document.getElementById('target400').innerText = "< $" + Math.floor(fpl * 4.00).toLocaleString();
-
+        updateTrackGradient(size);
         calcHealth(size, annualInc);
 
-        // --- SNAP Tab Updates ---
+        // --- SNAP Logic ---
         const fpl100_annual = getFPL(size);
-        const limit_annual = fpl100_annual * 2.0; // 200% FPL Limit Annual
+        const limit_annual = fpl100_annual * 2.0; 
         
         const snapIncomeSlider = document.getElementById('annualSnapIncome');
         const snapDeductSlider = document.getElementById('monthlyDeductions');
 
-        // Cap Income Slider
+        // Cap Income
         snapIncomeSlider.max = limit_annual;
         document.getElementById('snapLimitText').innerText = "Max Allowed: $" + limit_annual.toLocaleString() + "/yr";
 
-        // Get Income Value (clamped)
         let snapAnnual = parseFloat(snapIncomeSlider.value);
         if (snapAnnual > limit_annual) snapAnnual = limit_annual;
 
-        // Calculate Monthly Income
         const currentMonthlyIncome = snapAnnual / 12;
 
-        // Cap Deductions Slider
-        let maxDeduction = Math.ceil(currentMonthlyIncome / 50) * 50;
+        // Cap Deductions
+        let maxDeduction = Math.ceil(currentMonthlyIncome / 100) * 100;
         if (maxDeduction === 0) maxDeduction = 0;
         snapDeductSlider.max = maxDeduction;
 
-        // Get Deduction Value (clamped)
         let snapDeduct = parseFloat(snapDeductSlider.value);
         if (snapDeduct > maxDeduction) {
             snapDeduct = maxDeduction;
             snapDeductSlider.value = maxDeduction;
         }
 
-        // Update Labels
         document.getElementById('snapIncomeVal').innerText = "$" + snapAnnual.toLocaleString();
         document.getElementById('deductVal').innerText = "$" + snapDeduct.toLocaleString();
 
         calcSnap(size, currentMonthlyIncome, snapDeduct);
     }
 
+    function updateTrackGradient(size) {
+        const fpl = getFPL(size);
+        const maxSlider = 300000;
+        const isPreg = document.getElementById('pregCheck').checked;
+        
+        // Platinum limit extends to 195% if pregnant
+        const platLimit = isPreg ? 1.95 : 1.38;
+
+        const pPlat = ((fpl * platLimit) / maxSlider) * 100;
+        const pSilver = ((fpl * 2.50) / maxSlider) * 100; 
+        const pGold = ((fpl * 4.00) / maxSlider) * 100;
+
+        const track = document.getElementById('healthTrack');
+        
+        track.style.background = `linear-gradient(to right, 
+            var(--platinum) 0%, var(--platinum) ${pPlat}%, 
+            var(--silver) ${pPlat}%, var(--silver) ${pSilver}%, 
+            var(--gold) ${pSilver}%, var(--gold) ${pGold}%, 
+            var(--cliff) ${pGold}%, var(--cliff) 100%)`;
+    }
+
     function calcHealth(size, income) {
         const resultBox = document.getElementById('healthResult');
         const title = document.getElementById('healthTitle');
         const desc = document.getElementById('healthDesc');
-        const bar = document.getElementById('healthBar');
+        const isPreg = document.getElementById('pregCheck').checked;
 
         resultBox.classList.remove('hidden');
         
         const fpl100 = getFPL(size);
         const fplPercent = (income / fpl100) * 100;
-        
         resultBox.className = 'result-box';
         
-        if (fplPercent <= 138) {
-            title.innerText = "Healthy Michigan Plan (Platinum)";
-            desc.innerText = "State-sponsored Platinum-equivalent plan. $0 premiums.";
+        const platThreshold = isPreg ? 195 : 138;
+
+        if (fplPercent <= platThreshold) {
+            title.innerText = isPreg ? "Healthy Michigan (Pregnancy)" : "Healthy Michigan Plan (Platinum)";
+            desc.innerText = isPreg 
+                ? "Extended coverage limit (195% FPL) applies for pregnant members. $0 premiums." 
+                : "State-sponsored. $0 premiums.";
             resultBox.style.border = "2px solid var(--platinum)";
             title.style.color = "var(--platinum)";
-            bar.style.width = "25%";
-            bar.style.backgroundColor = "var(--platinum)";
         } else if (fplPercent <= 250) {
             title.innerText = "Silver Plus (High Value)";
-            desc.innerText = "Eligible for Cost Sharing Reductions (CSR).";
+            desc.innerText = "Eligible for CSR (Lower deductibles).";
             resultBox.style.border = "2px solid var(--silver)";
             title.style.color = "#666";
-            bar.style.width = "50%";
-            bar.style.backgroundColor = "var(--silver)";
         } else if (fplPercent <= 400) {
             title.innerText = "Standard Marketplace";
-            desc.innerText = "Eligible for premium tax credits.";
+            desc.innerText = "Eligible for Premium Tax Credits.";
             resultBox.style.border = "2px solid var(--gold)";
             title.style.color = "var(--gold)";
-            bar.style.width = "75%";
-            bar.style.backgroundColor = "var(--gold)";
         } else {
             title.innerText = "Subsidy Cliff";
             desc.innerText = "Full price premiums apply.";
             resultBox.style.border = "2px solid var(--cliff)";
             title.style.color = "var(--cliff)";
-            bar.style.width = "100%";
-            bar.style.backgroundColor = "var(--cliff)";
         }
     }
 
@@ -367,28 +304,53 @@
         const resultBox = document.getElementById('snapResult');
         const title = document.getElementById('snapTitle');
         const desc = document.getElementById('snapDesc');
+        const mathDiv = document.getElementById('mathContent');
+        const isDisabled = document.getElementById('disabilityCheck').checked;
 
         resultBox.classList.remove('hidden');
         
         const maxBenefit = getMaxSnap(size);
-        const netIncome = Math.max(0, monthlyIncome - deductions);
-        const benefit = maxBenefit - (0.3 * netIncome);
+        const stdDed = getStdDeduction(size);
         
-        if (benefit > 0) {
-            let finalBenefit = Math.max(0, Math.round(benefit));
+        const adjIncome = Math.max(0, monthlyIncome - stdDed);
+        
+        const halfAdjIncome = adjIncome * 0.5;
+        let excessShelter = Math.max(0, deductions - halfAdjIncome);
+        
+        const shelterCap = 700; 
+        if (!isDisabled && excessShelter > shelterCap) {
+            excessShelter = shelterCap;
+        }
+
+        const netIncome = Math.max(0, adjIncome - excessShelter);
+        const benefitCalc = maxBenefit - (0.3 * netIncome);
+        
+        let finalBenefit = 0;
+        if (benefitCalc > 0) {
+            finalBenefit = Math.max(0, Math.round(benefitCalc));
             if (size <= 2 && finalBenefit < 23 && finalBenefit > 0) finalBenefit = 23;
-            
+        }
+
+        if (finalBenefit > 0) {
             title.innerText = `$${finalBenefit} / month`;
-            desc.innerText = "Estimated SNAP Benefit amount.";
+            desc.innerText = "Estimated SNAP Benefit.";
             title.style.color = "var(--primary)";
         } else {
             title.innerText = "$0 Benefit";
             desc.innerText = "Benefit reduces to zero.";
             title.style.color = "var(--subtext)";
         }
+
+        mathDiv.innerHTML = `
+            <div class="math-row"><span>Max Grant:</span> <span class="math-val">$${maxBenefit}</span></div>
+            <div class="math-row"><span>Gross Income:</span> <span class="math-val">$${Math.round(monthlyIncome)}</span></div>
+            <div class="math-row"><span>- Std Ded:</span> <span class="math-val">$${stdDed}</span></div>
+            <div class="math-row"><span>- Shelter Ded:</span> <span class="math-val">$${Math.round(excessShelter)}</span></div>
+            <div class="math-row"><span>= Net Income:</span> <span class="math-val">$${Math.round(netIncome)}</span></div>
+            <div class="math-row" style="margin-top:5px; color:var(--primary)"><span>Result:</span> <span class="math-val">$${maxBenefit} - 30% Net</span></div>
+        `;
     }
 
-    // Initialize on load
     window.onload = updateCalculations;
 </script>
 
