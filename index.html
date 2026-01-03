@@ -46,7 +46,9 @@
         .hidden { display: none; }
 
         /* Controls */
-        label { display: block; font-size: 14px; color: var(--subtext); margin-bottom: 8px; font-weight: 500; }
+        label { display: block; font-size: 14px; color: var(--subtext); margin-bottom: 4px; font-weight: 600; }
+        .helper-text { display: block; font-size: 11px; color: #666; margin-bottom: 12px; line-height: 1.3; }
+        
         .value-display { color: var(--text); font-weight: 600; float: right; }
         .limit-display { display: block; font-size: 11px; color: var(--cliff); margin-top: -5px; margin-bottom: 10px; text-align: right; }
         .deduct-limit-display { font-size: 12px; color: var(--subtext); font-weight: 400; margin-left: 5px; }
@@ -167,7 +169,8 @@
             </div>
             <span id="snapLimitText" class="limit-display">Max Allowed: --</span>
             
-            <label>Monthly Deductions <span id="deductLimitText" class="deduct-limit-display">(Limit: $2000)</span> <span id="deductVal" class="value-display">$2,000</span></label>
+            <label>Monthly Shelter & Utility Costs <span id="deductLimitText" class="deduct-limit-display">(Limit: $2000)</span> <span id="deductVal" class="value-display">$2,000</span></label>
+            <span class="helper-text">Sum of: Rent/Mortgage, Property Tax, Insurance, Heating, Cooling, Electric, Water, Phone.</span>
             
             <div class="lock-row">
                 <span class="lock-label">Auto-Set Max</span>
@@ -214,7 +217,7 @@
 
     function adjustVal(id, amount) {
         const el = document.getElementById(id);
-        if (el.disabled) return; // Don't adjust if locked/disabled
+        if (el.disabled) return; 
         let newVal = parseFloat(el.value) + amount;
         if (newVal < parseFloat(el.min)) newVal = parseFloat(el.min);
         if (newVal > parseFloat(el.max)) newVal = parseFloat(el.max);
@@ -267,13 +270,11 @@
 
         // Auto-Max Logic
         if (isAutoMax) {
-            // Force the slider to the Max Limit
-            snapDeductSlider.max = 5000; // Keep full range available visually
+            snapDeductSlider.max = 5000; 
             snapDeductSlider.value = maxDeduction;
-            snapDeductSlider.disabled = true; // Optional: Lock interaction to indicate auto-mode
+            snapDeductSlider.disabled = true; 
         } else {
             snapDeductSlider.disabled = false;
-            // Standard clamping: If manual value exceeds new limit, push it down
             snapDeductSlider.max = maxDeduction; 
             if (parseFloat(snapDeductSlider.value) > maxDeduction) {
                 snapDeductSlider.value = maxDeduction;
