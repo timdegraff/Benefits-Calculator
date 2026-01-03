@@ -15,7 +15,7 @@
             --silver: #A0A0A5;
             --gold: #FF9500;
             --cliff: #FF3B30;
-            --thumb-color: #007AFF; /* Default thumb color, JS updates this */
+            --thumb-color: #007AFF; 
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -49,13 +49,14 @@
         label { display: block; font-size: 14px; color: var(--subtext); margin-bottom: 8px; font-weight: 500; }
         .value-display { color: var(--text); font-weight: 600; float: right; }
         .limit-display { display: block; font-size: 11px; color: var(--cliff); margin-top: -5px; margin-bottom: 10px; text-align: right; }
+        .deduct-limit-display { font-size: 12px; color: var(--subtext); font-weight: 400; margin-left: 5px; }
         
-        /* Lock Row */
+        /* Auto-Max Row */
         .lock-row {
             display: flex; justify-content: flex-end; align-items: center;
             margin-top: -5px; margin-bottom: 10px;
         }
-        .lock-label { font-size: 12px; color: var(--subtext); margin-right: 6px; }
+        .lock-label { font-size: 12px; color: var(--primary); margin-right: 6px; font-weight: 600; }
         input.lock-check { width: 16px; height: 16px; margin: 0; accent-color: var(--primary); }
 
         /* Slider Group with Buttons */
@@ -66,31 +67,24 @@
         input[type=range].gradient-slider {
             -webkit-appearance: none;
             width: 100%;
-            background: transparent; /* Track color handled by JS inline style */
+            background: transparent; 
             border-radius: 12px;
-            height: 12px; /* Thicker track to see colors */
+            height: 12px; 
         }
         
         input[type=range].gradient-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 28px;
-            width: 28px;
-            border-radius: 50%;
-            background: var(--thumb-color); /* Dynamic Color */
-            cursor: pointer;
-            margin-top: 0px; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            border: 2px solid white;
+            height: 28px; width: 28px; border-radius: 50%;
+            background: var(--thumb-color); 
+            cursor: pointer; margin-top: 0px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 2px solid white;
             transition: background-color 0.2s ease;
         }
         
         input[type=range].gradient-slider::-moz-range-thumb {
-            height: 28px;
-            width: 28px;
-            border-radius: 50%;
+            height: 28px; width: 28px; border-radius: 50%;
             background: var(--thumb-color);
-            cursor: pointer;
-            border: 2px solid white;
+            cursor: pointer; border: 2px solid white;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             transition: background-color 0.2s ease;
         }
@@ -173,11 +167,11 @@
             </div>
             <span id="snapLimitText" class="limit-display">Max Allowed: --</span>
             
-            <label>Monthly Deductions (Rent/Util) <span id="deductVal" class="value-display">$2,000</span></label>
+            <label>Monthly Deductions <span id="deductLimitText" class="deduct-limit-display">(Limit: $2000)</span> <span id="deductVal" class="value-display">$2,000</span></label>
             
             <div class="lock-row">
-                <span class="lock-label">Lock Max</span>
-                <input type="checkbox" class="lock-check" id="lockDeductions" onchange="updateCalculations()">
+                <span class="lock-label">Auto-Set Max</span>
+                <input type="checkbox" class="lock-check" id="autoMaxDeductions" onchange="updateCalculations()">
             </div>
 
             <div class="slider-group">
@@ -220,6 +214,7 @@
 
     function adjustVal(id, amount) {
         const el = document.getElementById(id);
+        if (el.disabled) return; // Don't adjust if locked/disabled
         let newVal = parseFloat(el.value) + amount;
         if (newVal < parseFloat(el.min)) newVal = parseFloat(el.min);
         if (newVal > parseFloat(el.max)) newVal = parseFloat(el.max);
@@ -239,21 +234,22 @@
         const size = parseInt(document.getElementById('hhSize').value);
         document.getElementById('hhSizeVal').innerText = size;
 
-        // Health
+        // Health Logic
         const annualInc = parseFloat(document.getElementById('annualIncome').value);
         document.getElementById('incomeVal').innerText = "$" + annualInc.toLocaleString();
         
-        updateTrackGradient(size); // Updates track AND bubble color
+        updateTrackGradient(size); 
         calcHealth(size, annualInc);
 
-        // SNAP
+        // SNAP Logic
         const fpl100_annual = getFPL(size);
         const limit_annual = fpl100_annual * 2.0; 
         
         const snapIncomeSlider = document.getElementById('annualSnapIncome');
         const snapDeductSlider = document.getElementById('monthlyDeductions');
-        const isLocked = document.getElementById('lockDeductions').checked;
+        const isAutoMax = document.getElementById('autoMaxDeductions').checked;
 
+        // Cap Income Slider
         snapIncomeSlider.max = limit_annual;
         document.getElementById('snapLimitText').innerText = "Max Allowed: $" + limit_annual.toLocaleString() + "/yr";
 
@@ -262,21 +258,29 @@
 
         const currentMonthlyIncome = snapAnnual / 12;
 
-        let maxDeduction = 5000; 
-        if (!isLocked) {
-            maxDeduction = Math.ceil(currentMonthlyIncome / 100) * 100;
-            if (maxDeduction === 0) maxDeduction = 0;
-            snapDeductSlider.max = maxDeduction;
+        // Calculate the Max Possible Deduction (Round up to nearest 100)
+        let maxDeduction = Math.ceil(currentMonthlyIncome / 100) * 100;
+        if (maxDeduction === 0) maxDeduction = 0;
+
+        // Update Visual Limit Text
+        document.getElementById('deductLimitText').innerText = "(Limit: $" + maxDeduction + ")";
+
+        // Auto-Max Logic
+        if (isAutoMax) {
+            // Force the slider to the Max Limit
+            snapDeductSlider.max = 5000; // Keep full range available visually
+            snapDeductSlider.value = maxDeduction;
+            snapDeductSlider.disabled = true; // Optional: Lock interaction to indicate auto-mode
         } else {
-            snapDeductSlider.max = 5000; 
+            snapDeductSlider.disabled = false;
+            // Standard clamping: If manual value exceeds new limit, push it down
+            snapDeductSlider.max = maxDeduction; 
+            if (parseFloat(snapDeductSlider.value) > maxDeduction) {
+                snapDeductSlider.value = maxDeduction;
+            }
         }
 
         let snapDeduct = parseFloat(snapDeductSlider.value);
-        if (!isLocked && snapDeduct > maxDeduction) {
-            snapDeduct = maxDeduction;
-            snapDeductSlider.value = maxDeduction;
-        }
-
         document.getElementById('snapIncomeVal').innerText = "$" + snapAnnual.toLocaleString();
         document.getElementById('deductVal').innerText = "$" + snapDeduct.toLocaleString();
 
@@ -297,20 +301,17 @@
         const currentVal = parseFloat(slider.value);
         const currentPercent = (currentVal / maxSlider) * 100;
 
-        // 1. Set Track Gradient
         slider.style.background = `linear-gradient(to right, 
             var(--platinum) 0%, var(--platinum) ${pPlat}%, 
             var(--silver) ${pPlat}%, var(--silver) ${pSilver}%, 
             var(--gold) ${pSilver}%, var(--gold) ${pGold}%, 
             var(--cliff) ${pGold}%, var(--cliff) 100%)`;
 
-        // 2. Set Bubble Color based on current zone
-        let bubbleColor = "var(--platinum)"; // Default
+        let bubbleColor = "var(--platinum)";
         if (currentPercent > pGold) bubbleColor = "var(--cliff)";
         else if (currentPercent > pSilver) bubbleColor = "var(--gold)";
         else if (currentPercent > pPlat) bubbleColor = "var(--silver)";
         
-        // Update CSS variable for the thumb
         document.documentElement.style.setProperty('--thumb-color', bubbleColor);
     }
 
